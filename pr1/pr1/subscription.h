@@ -14,7 +14,7 @@
 #define IDFOUND			135
 #define IDNOTFOUND		136
 
-#define MAXSUBSCRIPT 12000
+#define MAXSUBSCRIPT 11000
 
 using namespace std;
 

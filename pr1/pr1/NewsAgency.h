@@ -12,7 +12,7 @@
 #define IDFOUND			135
 #define IDNOTFOUND		136
 
-#define MAXAGENCY 1500
+#define MAXAGENCY 1200
 
 using namespace std;
 

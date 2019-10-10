@@ -171,6 +171,7 @@ void SubscriptionTest(bool print_rec) {
 	DelimFieldBuffer buffer('|', STDMAXBUF);
 	RecordFile <Subscription> SubscriptionFile(buffer);
 
+
 	char filename[30] = "FileOfSubscription.dat";
 
 	SubscriptionFile.Create(filename, ios::out | ios::trunc);
@@ -235,6 +236,11 @@ int insertSubscript(string id) {
 	Subscription newsubscript(id.c_str());
 	string buf;
 
+	if (id.size() != 16) {
+		cout << "Check sizeof Id" << endl;
+		return -1;
+	}
+
 	char filename[30];
 	strcpy(filename,"FileOfNewsAgency.dat");
 
@@ -281,7 +287,7 @@ int insertSubscript(string id) {
 
 	DelimFieldBuffer buffer('|', STDMAXBUF);
 	RecordFile <Subscription> subscriptionFile(buffer);
-	subscriptionFile.Open("fileOfSubscription.dat", ios::out | ios::app);
+	subscriptionFile.Open("FileOfSubscription.dat", ios::out | ios::app);
 	if (subscriptionFile.Write(newsubscript) == -1) {
 		cout << "Write Error!" << endl;
 	}
@@ -294,45 +300,32 @@ int deleteSubscript(string id, int flag) {
 	Subscription m;
 	Subscription *subscriptlist = new Subscription[MAXSUBSCRIPT];
 
-	int ifs_lastp;
 	int idx = 0;
 	bool delete_flag = false;
 
-	ifstream ifs("fileOfSubscription.dat");
-
-	if (ifs.fail()) {
-		cout << "Open Error!" << endl;
-		return -1;
-	}
-	ifs.ignore(numeric_limits<streamsize>::max(), '\n');
 
 	DelimFieldBuffer buffer('|', STDMAXBUF);
 	RecordFile <Subscription> subscriptFile(buffer);
-	subscriptFile.Open("fileOfSubscription.dat", ios::in);
+	subscriptFile.Open("FileOfSubscription.dat", ios::in);
 
-	ifs.clear();
-	ifs.seekg(0, ifs.end);
-	ifs_lastp = ifs.tellg();
-	ifs.seekg(0, ifs.beg);
 
-	while (ifs.tellg() < ifs_lastp) {
-		subscriptFile.Read(m);
-		if (strcmp(m.get_id(0).c_str(), id.c_str())) {
+
+	while (subscriptFile.Read(m) != -1) {
+
+		if (strcmp(m.get_id(flag).c_str(), id.c_str())) {
 			subscriptlist[idx++] = m;
-		}
+		} 
 		else {
 			delete_flag = true;
-			ifs.seekg(m.get_size(), ifs.cur);
 		}
-		ifs.seekg(m.get_size(), ifs.cur);
 	}
+
 	subscriptFile.Close();
-	ifs.close();
 
 
 	if (delete_flag == false) return -1;
 
-	subscriptFile.Create("fileOfSubscription.dat", ios::out | ios::trunc);
+	subscriptFile.Create("FileOfSubscription.dat", ios::out | ios::trunc);
 	for (int i = 0; i < idx; i++) {
 		int recaddr;
 		if ((recaddr = subscriptFile.Write(subscriptlist[i])) == -1) {
@@ -340,12 +333,17 @@ int deleteSubscript(string id, int flag) {
 		}
 	}
 	subscriptFile.Close();
-
+	delete[]subscriptlist;
 	return 0;
 }
 int modifySubscript(string id) {
 	Subscription newsubscript(id.c_str());
 	string buf;
+
+	if (id.size() != 16) {
+		cout << "Check sizeof Id" << endl;
+		return -1;
+	}
 
 	char filename[30];
 	strcpy(filename, "FileOfNewsAgency.dat");
@@ -394,7 +392,7 @@ int modifySubscript(string id) {
 
 	DelimFieldBuffer buffer('|', STDMAXBUF);
 	RecordFile <Subscription> subscriptionFile(buffer);
-	subscriptionFile.Open("fileOfSubscription.dat", ios::out | ios::app);
+	subscriptionFile.Open("FileOfSubscription.dat", ios::out | ios::app);
 	if (subscriptionFile.Write(newsubscript) == -1) {
 		cout << "Write Error!" << endl;
 	}

@@ -179,6 +179,7 @@ void recordInsert() {
 	where_file = selectRecfile();
 
 	if (where_file == 0) return;
+	int res = 0;
 
 	string input_id;
 	char filename[30] = " ";
@@ -198,12 +199,12 @@ void recordInsert() {
 		return;
 	}
 
-	if (where_file == MEMFILE) insertMember(input_id);
-	else if (where_file == AGENCYFILE) insertAgency(input_id);
-	else if (where_file == SUBSCRIPTFILE) insertSubscript(input_id);
+	if (where_file == MEMFILE) res = insertMember(input_id);
+	else if (where_file == AGENCYFILE) res = insertAgency(input_id);
+	else if (where_file == SUBSCRIPTFILE) res = insertSubscript(input_id);
 
 
-	cout << "Insert done.\n\n";
+	if (res == 0) cout << "Insert done.\n\n";
 }
 
 void recordDelete() {
@@ -244,7 +245,7 @@ void recordModify() {
 	where_file = selectRecfile();
 
 	if (where_file == 0) return;
-
+	int res = 0;
 
 	string input_id;
 	char filename[30] = " ";
@@ -264,11 +265,11 @@ void recordModify() {
 		return;
 	}
 
-	if (where_file == MEMFILE) modifyMember(input_id);
-	else if (where_file == AGENCYFILE) modifyAgency(input_id);
-	else if (where_file == SUBSCRIPTFILE) modifySubscript(input_id);
+	if (where_file == MEMFILE) res = modifyMember(input_id);
+	else if (where_file == AGENCYFILE) res = modifyAgency(input_id);
+	else if (where_file == SUBSCRIPTFILE) res = modifySubscript(input_id);
 
-	cout << "Update done!\n\n";
+	if (res == 0) cout << "Update done!\n\n";
 
 }
 

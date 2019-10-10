@@ -220,6 +220,11 @@ int insertAgency(string id) {
 	NewsAgency newAgency(id.c_str());
 	string buf;
 
+	if (id.size() != 12) {
+		cout << "Check sizeof Id" << endl;
+		return -1;
+	}
+
 
 	cout << "Input name : ";
 	cin >> buf;
@@ -232,7 +237,7 @@ int insertAgency(string id) {
 
 	DelimFieldBuffer buffer('|', STDMAXBUF);
 	RecordFile <NewsAgency> AgencyFile(buffer);
-	AgencyFile.Open("fileOfNewsAgency.dat", ios::out | ios::app);
+	AgencyFile.Open("FileOfNewsAgency.dat", ios::out | ios::app);
 	if (AgencyFile.Write(newAgency) == -1) {
 		cout << "Write Error!" << endl;
 	}
@@ -245,45 +250,32 @@ int deleteAgency(string id, int flag) {
 	NewsAgency m;
 	NewsAgency *agencylist = new NewsAgency[MAXAGENCY];
 
-	int ifs_lastp;
+
 	int idx = 0;
 	bool delete_flag = false;
 
-	ifstream ifs("fileOfNewsAgency.dat");
-
-	if (ifs.fail()) {
-		cout << "Open Error!" << endl;
-		return -1;
-	}
-	ifs.ignore(numeric_limits<streamsize>::max(), '\n');
 
 	DelimFieldBuffer buffer('|', STDMAXBUF);
 	RecordFile <NewsAgency> AgencyFile(buffer);
-	AgencyFile.Open("fileOfNewsAgency.dat", ios::in);
+	AgencyFile.Open("FileOfNewsAgency.dat", ios::in);
 
-	ifs.clear();
-	ifs.seekg(0, ifs.end);
-	ifs_lastp = ifs.tellg();
-	ifs.seekg(0, ifs.beg);
 
-	while (ifs.tellg() < ifs_lastp) {
-		AgencyFile.Read(m);
+
+	while (AgencyFile.Read(m) != -1) {
 		if (strcmp(m.get_id(0).c_str(), id.c_str())) {
 			agencylist[idx++] = m;
 		}
 		else {
 			delete_flag = true;
-			ifs.seekg(m.get_size(), ifs.cur);
 		}
-		ifs.seekg(m.get_size(), ifs.cur);
 	}
 	AgencyFile.Close();
-	ifs.close();
+
 
 
 	if (delete_flag == false) return -1;
 
-	AgencyFile.Create("fileOfNewsAgency.dat", ios::out | ios::trunc);
+	AgencyFile.Create("FileOfNewsAgency.dat", ios::out | ios::trunc);
 	for (int i = 0; i < idx; i++) {
 		int recaddr;
 		if ((recaddr = AgencyFile.Write(agencylist[i])) == -1) {
@@ -292,8 +284,9 @@ int deleteAgency(string id, int flag) {
 	}
 	AgencyFile.Close();
 
+	delete[]agencylist;
 	if (flag == 0)	// delete method. otherwise, update
-		deleteSubscript(id, flag);
+		deleteSubscript(id, 201);
 
 	return 0;
 }
@@ -301,6 +294,10 @@ int modifyAgency(string id) {
 	NewsAgency updateAgency(id.c_str());
 	string buf;
 
+	if (id.size() != 12) {
+		cout << "Check sizeof Id" << endl;
+		return -1;
+	}
 
 	cout << "Input name : ";
 	cin >> buf;
@@ -314,7 +311,7 @@ int modifyAgency(string id) {
 
 	DelimFieldBuffer buffer('|', STDMAXBUF);
 	RecordFile <NewsAgency> AgencyFile(buffer);
-	AgencyFile.Open("fileOfNewsAgency.dat", ios::out | ios::app);
+	AgencyFile.Open("FileOfNewsAgency.dat", ios::out | ios::app);
 	if (AgencyFile.Write(updateAgency) == -1) {
 		cout << "Write Error!" << endl;
 	}

@@ -10,7 +10,7 @@
 #define IDFOUND			135
 #define IDNOTFOUND		136
 
-#define MAXMEMBER 1500
+#define MAXMEMBER 1200
 
 using namespace std;
 

@@ -304,7 +304,7 @@ int insertMember(string id) {
 
 	DelimFieldBuffer buffer('|', STDMAXBUF);
 	RecordFile <Member> MemberFile(buffer);
-	MemberFile.Open("fileOfMember.dat", ios::out | ios::app);
+	MemberFile.Open("FileOfMember.dat", ios::out | ios::app);
 	if (MemberFile.Write(newMember) == -1) {
 		cout << "Write Error!" << endl;
 	}
@@ -317,55 +317,37 @@ int deleteMember(string id, int flag) {
 	Member m;
 	Member *memlist = new Member[MAXMEMBER];
 
-	int ifs_lastp;
 	int idx = 0;
 	bool delete_flag = false;
 
-	ifstream ifs("fileOfMember.dat");
-
-	if (ifs.fail()){
-		cout << "Open Error!" << endl;
-		return -1;
-	}
-	ifs.ignore(numeric_limits<streamsize>::max(), '\n');
-
 	DelimFieldBuffer buffer('|', STDMAXBUF);
 	RecordFile <Member> MemberFile(buffer);
-	MemberFile.Open("fileOfMember.dat", ios::in);
+	MemberFile.Open("FileOfMember.dat", ios::in);
 
-	ifs.clear();
-	ifs.seekg(0, ifs.end);
-	ifs_lastp = ifs.tellg();
-	ifs.seekg(0, ifs.beg);
-
-	while (ifs.tellg() < ifs_lastp){
-		MemberFile.Read(m);
+	while (MemberFile.Read(m) != -1){
 		if (strcmp(m.get_id(0).c_str(), id.c_str())){
 			memlist[idx++] = m;
 		}
 		else{
 			delete_flag = true;
-			ifs.seekg(m.get_size(), ifs.cur);
 		}
-		ifs.seekg(m.get_size(), ifs.cur);
 	}
 	MemberFile.Close();
-	ifs.close();
-
 
 	if (delete_flag == false) return -1;
 
-	MemberFile.Create("fileOfMember.dat", ios::out | ios::trunc);
+	MemberFile.Create("FileOfMember.dat", ios::out | ios::trunc);
 	for (int i = 0; i < idx; i++) {
 		int recaddr;
 		if ((recaddr = MemberFile.Write(memlist[i])) == -1) {
 			cout << "Write Error!" << endl;
 		}
-	}
+	} 
 	MemberFile.Close();
 
+	delete[]memlist;
 	if (flag == 0)	// delete method. otherwise, update
-		deleteSubscript(id, flag);
+		deleteSubscript(id, 200);
 
 	return 0;
 }
@@ -406,7 +388,7 @@ int modifyMember(string id) {
 
 	DelimFieldBuffer buffer('|', STDMAXBUF);
 	RecordFile <Member> MemberFile(buffer);
-	MemberFile.Open("fileOfMember.dat", ios::out | ios::app);
+	MemberFile.Open("FileOfMember.dat", ios::out | ios::app);
 	if (MemberFile.Write(updateMember) == -1) {
 		cout << "Write Error!" << endl;
 	}
